@@ -83,6 +83,14 @@
     padding:10px 16px 0; margin:0 auto; max-width:210mm;
   }
 
+  .print-note{
+    max-width:210mm; margin:10px auto 0; padding:10px 12px;
+    border:1px solid var(--chrome-line); border-left:3px solid var(--chrome-accent);
+    border-radius:7px; background:var(--chrome-panel);
+    font-size:12.5px; line-height:1.45; color:var(--chrome-ink);
+  }
+  .print-note b{font-weight:600;}
+
   .sheet-wrap{ padding:16px; overflow-x:auto; }
 
   /* ---------- the A4 sheet ---------- */
@@ -165,7 +173,7 @@
   @page{ size:A4 portrait; margin:0; }
   @media print{
     body{ background:#fff; }
-    .toolbar, .hint{ display:none !important; }
+    .toolbar, .hint, .print-note{ display:none !important; }
     .sheet-wrap{ padding:0; overflow:visible; }
     .sheet{ box-shadow:none; margin:0; zoom:1; width:210mm; height:297mm; }
   }
@@ -194,6 +202,13 @@
 </div>
 
 <p class="hint">Set the options, then print at 100% scale (no “fit to page”) so the boxes stay A4-size. The small dotted row above each problem is for carrying and borrowing; the extra box on the left of the answer line catches a ten-thousands carry. “Show answers” prints an answer key.</p>
+
+<p class="print-note" id="printnote" hidden>
+  <b>Nothing happened when you tapped Print?</b> Phone browsers block printing from an embedded page.
+  Open this worksheet in its own tab first &mdash; use the &#8599; / &#8942; menu on this page &mdash; then print from the
+  browser&rsquo;s own menu (<b>Share &rarr; Print</b> on iPhone, <b>&#8942; &rarr; Print</b> on Android).
+  Choose <b>A4</b> and <b>100% scale</b>. The ready-made PDF in the chat prints from a phone without any of this.
+</p>
 
 <div class="sheet-wrap">
   <div class="sheet" id="sheet">
@@ -297,7 +312,16 @@
   document.getElementById('newset').addEventListener('click', build);
   document.getElementById('mode').addEventListener('change', build);
   document.getElementById('regroup').addEventListener('change', build);
-  document.getElementById('print').addEventListener('click', function(){ window.print(); });
+  document.getElementById('print').addEventListener('click', function(){
+    var note = document.getElementById('printnote');
+    try{
+      window.print();
+    }catch(e){
+      /* sandboxed frames reject print() outright */
+    }
+    note.hidden = false;
+    note.scrollIntoView({block:'nearest'});
+  });
   document.getElementById('answers').addEventListener('click', function(){
     var sheet = document.getElementById('sheet');
     var on = sheet.classList.toggle('show-answers');
