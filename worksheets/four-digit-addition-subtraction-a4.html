@@ -2,6 +2,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Source+Sans+3:wght@400;600&display=swap">
+<style id="pagesize">@page{ size:210mm 297mm; margin:0; }</style>
 <style>
   :root{
     --chrome-bg:#eceee9;
@@ -23,10 +24,10 @@
     --answer-ink:#2f7a52;
 
     /* worksheet metrics */
-    --c0:8mm;      /* regroup / carry column */
-    --cw:9.2mm;    /* digit cell */
-    --ch:8mm;      /* digit cell height */
-    --work-h:5.6mm;
+    --c0:7.8mm;    /* regroup / carry column */
+    --cw:9mm;      /* digit cell */
+    --ch:7.8mm;    /* digit cell height */
+    --work-h:5.4mm;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
@@ -82,7 +83,6 @@
     font-size:12.5px; color:var(--chrome-soft);
     padding:10px 16px 0; margin:0 auto; max-width:210mm;
   }
-
   .print-note{
     max-width:210mm; margin:10px auto 0; padding:10px 12px;
     border:1px solid var(--chrome-line); border-left:3px solid var(--chrome-accent);
@@ -93,29 +93,33 @@
 
   .sheet-wrap{ padding:16px; overflow-x:auto; }
 
-  /* ---------- the A4 sheet ---------- */
+  /* ---------- the sheet ---------- */
   .sheet{
-    width:210mm; min-height:297mm; box-sizing:border-box;
-    margin:0 auto; padding:11mm 10mm 9mm;
+    --page-w:210mm; --page-h:297mm;
+    width:var(--page-w); min-height:var(--page-h); box-sizing:border-box;
+    margin:0 auto; padding:12mm 12mm 10mm;
     background:var(--paper); color:var(--ink);
     font-family:"Andika", "Comic Neue", ui-rounded, system-ui, sans-serif;
     box-shadow:0 2px 18px rgba(0,0,0,.18);
     display:flex; flex-direction:column;
     -webkit-print-color-adjust:exact; print-color-adjust:exact;
   }
+  .sheet[data-paper="letter"]{ --page-w:215.9mm; --page-h:279.4mm; }
+
   .name-row{
     display:flex; gap:12mm; align-items:flex-end;
-    font-size:4.6mm; margin-bottom:5mm;
+    font-size:4.4mm; margin-bottom:4mm;
   }
   .name-row .fld{display:flex; align-items:flex-end; gap:2mm; flex:1;}
-  .name-row .line{flex:1; border-bottom:.5mm solid var(--ink); height:6mm;}
+  .name-row .line{flex:1; border-bottom:.5mm solid var(--ink); height:5.5mm;}
 
   .grid{
     flex:1;
     display:grid;
     grid-template-columns:repeat(4, calc(var(--c0) + 4 * var(--cw)));
     justify-content:space-between;
-    row-gap:3.4mm;
+    align-content:space-between;
+    row-gap:3mm;
   }
 
   .prob{ font-variant-numeric:tabular-nums; }
@@ -126,9 +130,8 @@
   }
 
   .labels span{
-    grid-column:span 1;
-    font-size:2.5mm; text-align:center; line-height:1.2;
-    padding-bottom:.6mm;
+    font-size:2.4mm; text-align:center; line-height:1.2;
+    padding-bottom:.5mm;
   }
   .labels span + span{ border-left:.3mm solid var(--ink); }
   .labels .pad{border:0;}
@@ -143,11 +146,11 @@
   .row div{
     height:var(--ch);
     display:flex; align-items:center; justify-content:center;
-    font-size:5.2mm; line-height:1;
+    font-size:5mm; line-height:1;
   }
   .row .cell{ border:.25mm solid var(--box-line); margin:0 .25mm; }
   .row.second .cell{ background:var(--sage); border-color:var(--sage-line); }
-  .row .op{ font-size:5.4mm; justify-content:center; }
+  .row .op{ font-size:5.2mm; justify-content:center; }
 
   .rule{ height:.9mm; background:var(--rule); margin:.7mm 0 1mm; }
 
@@ -160,28 +163,36 @@
 
   .foot{
     display:flex; justify-content:space-between; align-items:baseline;
-    font-size:3mm; color:#6d746e; padding-top:4mm;
+    font-size:2.9mm; color:#6d746e; padding-top:4mm;
   }
 
   /* phones: keep the sheet readable without horizontal hunting */
   @media screen and (max-width:900px){
     .sheet-wrap{ padding:12px 16px; }
-    .sheet{ zoom:.46; }
+    .sheet{ zoom:.45; }
   }
 
   /* ---------- print ---------- */
-  @page{ size:A4 portrait; margin:0; }
   @media print{
     body{ background:#fff; }
     .toolbar, .hint, .print-note{ display:none !important; }
     .sheet-wrap{ padding:0; overflow:visible; }
-    .sheet{ box-shadow:none; margin:0; zoom:1; width:210mm; height:297mm; }
+    .sheet{
+      box-shadow:none; margin:0; zoom:1;
+      width:var(--page-w); height:var(--page-h); min-height:0;
+    }
   }
   @media (prefers-reduced-motion:reduce){ *{animation:none !important; transition:none !important;} }
 </style>
 
 <div class="toolbar">
-  <h1>4-Digit Column Practice<small>Thousands · Hundreds · Tens · Ones — 24 problems, A4</small></h1>
+  <h1>4-Digit Column Practice<small>Thousands · Hundreds · Tens · Ones — 24 problems</small></h1>
+  <label class="field" for="paper">Paper
+    <select id="paper">
+      <option value="a4" selected>A4</option>
+      <option value="letter">US Letter</option>
+    </select>
+  </label>
   <label class="field" for="mode">Problems
     <select id="mode">
       <option value="mixed" selected>Mixed + and −</option>
@@ -201,17 +212,18 @@
   <button class="btn primary" id="print" type="button">Print</button>
 </div>
 
-<p class="hint">Set the options, then print at 100% scale (no “fit to page”) so the boxes stay A4-size. The small dotted row above each problem is for carrying and borrowing; the extra box on the left of the answer line catches a ten-thousands carry. “Show answers” prints an answer key.</p>
+<p class="hint">Pick the paper your printer actually holds — a sheet laid out for A4 comes out shifted and shrunken on a Letter printer, and the other way round. Print at 100% scale, not “fit to page”. The dotted strip above each problem is for carrying and borrowing; the extra box at the left of the answer line catches a ten-thousands carry.</p>
 
 <p class="print-note" id="printnote" hidden>
   <b>Nothing happened when you tapped Print?</b> Phone browsers block printing from an embedded page.
   Open this worksheet in its own tab first &mdash; use the &#8599; / &#8942; menu on this page &mdash; then print from the
   browser&rsquo;s own menu (<b>Share &rarr; Print</b> on iPhone, <b>&#8942; &rarr; Print</b> on Android).
-  Choose <b>A4</b> and <b>100% scale</b>. The ready-made PDF in the chat prints from a phone without any of this.
+  In the print dialog, set <b>Paper</b> to the size you chose above and <b>Scale</b> to 100%.
+  The ready-made PDFs in the chat print from a phone without any of this.
 </p>
 
 <div class="sheet-wrap">
-  <div class="sheet" id="sheet">
+  <div class="sheet" id="sheet" data-paper="a4">
     <div class="name-row">
       <span class="fld">Name:<span class="line"></span></span>
       <span class="fld">Date:<span class="line"></span></span>
@@ -260,7 +272,7 @@
     return {a:5678,b:1234,op:'−',ans:4444};
   }
 
-  function digitCells(n, klass){
+  function digitCells(n){
     var s = String(n);
     while(s.length < 4){ s = ' ' + s; }
     var out = '';
@@ -301,17 +313,25 @@
       if(mode === 'add'){ sub = false; }
       else if(mode === 'sub'){ sub = true; }
       else { sub = Math.random() < 0.55; }
-      var p = sub ? makeSub(want) : makeAdd(want);
-      html += render(p);
+      html += render(sub ? makeSub(want) : makeAdd(want));
     }
     document.getElementById('grid').innerHTML = html;
     var id = rnd(1,99);
     document.getElementById('setid').textContent = 'Set ' + (id < 10 ? '0' + id : id);
   }
 
+  function setPaper(){
+    var v = document.getElementById('paper').value;
+    document.getElementById('sheet').setAttribute('data-paper', v);
+    document.getElementById('pagesize').textContent =
+      v === 'letter' ? '@page{ size:215.9mm 279.4mm; margin:0; }'
+                     : '@page{ size:210mm 297mm; margin:0; }';
+  }
+
   document.getElementById('newset').addEventListener('click', build);
   document.getElementById('mode').addEventListener('change', build);
   document.getElementById('regroup').addEventListener('change', build);
+  document.getElementById('paper').addEventListener('change', setPaper);
   document.getElementById('print').addEventListener('click', function(){
     var note = document.getElementById('printnote');
     try{
@@ -329,6 +349,7 @@
     this.textContent = on ? 'Hide answers' : 'Show answers';
   });
 
+  setPaper();
   build();
 })();
 </script>
